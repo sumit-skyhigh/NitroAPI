@@ -1,0 +1,32 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using {{ProjectName}}.Api.Models;
+
+namespace {{ProjectName}}.Api.Interfaces
+{
+    public interface ITokenService
+    {
+        string CreateToken(AppUser user);
+    }
+}
+"
+    "appsettings.json.template" = @"
+{
+    ""ConnectionStrings"": {
+        ""DefaultConnection"": ""Data Source=app.db;""
+    },
+    ""Logging"": {
+        ""LogLevel"": {
+            ""Default"": ""Information"",
+            ""Microsoft.AspNetCore"": ""Warning""
+        }
+    },
+    ""AllowedHosts"": ""*"",
+    ""JWT"": {
+        ""Issuer"": ""http://localhost:5246"",
+        ""Audience"": ""http://localhost:5246"",
+        ""SigningKey"": ""sdgfijh3466iu345g87g08c24g7gr803g30587ghh35807fg39074fvg80493745gf082b507807g807fgf""
+    }
+}
