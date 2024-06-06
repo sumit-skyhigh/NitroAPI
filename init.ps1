@@ -1,29 +1,23 @@
 . .\Functions.ps1
-. .\CreateBasicFiles.ps1
+. .\WriteCoreFiles.ps1
 
 $projectName = Prompt-ProjectName -promptMessage "Enter the Web API project name"
-Create-ProjectDirectory -projectName $projectName
-Create-Solution -projectName $projectName
-Create-Directories -projectName $projectName
-Create-Projects -projectName $projectName
+
+# Create project directory, solution, directories, add projects to solution.
+Write-ProjectDirectory -projectName $projectName
+Write-Solution -projectName $projectName
+Write-Directories -projectName $projectName
+Write-Projects -projectName $projectName
 Add-ProjectsToSolution -projectName $projectName
+
+# Install NuGet packages, and restore NuGet packages
 Install-NuGetPackages -projectName $projectName
 Restore-NuGetPackages -projectName $projectName
 
-# Call individual file creation functions
-Create-AccountController -projectName $projectName
-Create-Extensions -projectName $projectName
-Create-GlobalUsing -projectName $projectName
-Create-Program -projectName $projectName
-Create-TokenService -projectName $projectName
-Create-ApplicationDBContext -projectName $projectName
-Create-AppUser -projectName $projectName
-Create-RegisterDto -projectName $projectName
-Create-LoginDto -projectName $projectName
-Create-NewUserDto -projectName $projectName
-Create-ITokenService -projectName $projectName
-Create-AppSettings -projectName $projectName
+# Create core files
+Write-CoreFiles -projectName $projectName
 
-Init-Git
+# Init Git and add migration
+Add-Git
 Add-MigrationAndUpdateDatabase -projectName $projectName
-Run-Project
+Start-Project

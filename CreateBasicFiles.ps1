@@ -1,4 +1,24 @@
-function Create-AccountController {
+Write-BasicFiles {
+    param(
+        [string]$projectName
+    )
+    # Call individual file creation functions
+    Write-AccountController -projectName $projectName
+    Write-Extensions -projectName $projectName
+    Write-GlobalUsing -projectName $projectName
+    Write-Program -projectName $projectName
+    Write-TokenService -projectName $projectName
+    Write-ApplicationDBContext -projectName $projectName
+    Write-AppUser -projectName $projectName
+    Write-RegisterDto -projectName $projectName
+    Write-LoginDto -projectName $projectName
+    Write-NewUserDto -projectName $projectName
+    Write-ITokenService -projectName $projectName
+    Write-AppSettings -projectName $projectName
+}
+
+
+Write-AccountController {
     param(
         [string]$projectName
     )
@@ -107,7 +127,7 @@ namespace $projectName.Api.Controllers
     Set-Content "$projectName/src/$projectName.Api/Controllers/AccountController.cs" -Value $content
 }
 
-function Create-Extensions {
+function Write-Extensions {
     param(
         [string]$projectName
     )
@@ -135,7 +155,7 @@ namespace $projectName.Api.Helpers
     Set-Content "$projectName/src/$projectName.Api/Helpers/Extensions.cs" -Value $content
 }
 
-function Create-GlobalUsing {
+function Write-GlobalUsing {
     param(
         [string]$projectName
     )
@@ -163,7 +183,7 @@ global using $projectName.Api.Dtos.Account;
     Set-Content "$projectName/src/$projectName.Api/GlobalUsing.cs" -Value $content
 }
 
-function Create-Program {
+function Write-Program {
     param(
         [string]$projectName
     )
@@ -278,7 +298,7 @@ app.Run();
     Set-Content "$projectName/src/$projectName.Api/Program.cs" -Value $content
 }
 
-function Create-TokenService {
+function Write-TokenService {
     param(
         [string]$projectName
     )
@@ -339,7 +359,7 @@ namespace $projectName.Api.Services
     Set-Content "$projectName/src/$projectName.Api/Services/TokenService.cs" -Value $content
 }
 
-function Create-ApplicationDBContext {
+function Write-ApplicationDBContext {
     param(
         [string]$projectName
     )
@@ -392,7 +412,7 @@ namespace $projectName.Api.Data
     Set-Content "$projectName/src/$projectName.Api/Data/ApplicationDBContext.cs" -Value $content
 }
 
-function Create-AppUser {
+function Write-AppUser {
     param(
         [string]$projectName
     )
@@ -416,7 +436,7 @@ namespace $projectName.Api.Models
     Set-Content "$projectName/src/$projectName.Api/Models/AppUser.cs" -Value $content
 }
 
-function Create-RegisterDto {
+function Write-RegisterDto {
     param(
         [string]$projectName
     )
@@ -446,7 +466,7 @@ namespace $projectName.Api.Dtos.Account
     Set-Content "$projectName/src/$projectName.Api/Dtos/Account/RegisterDto.cs" -Value $content
 }
 
-function Create-LoginDto {
+function Write-LoginDto {
     param(
         [string]$projectName
     )
@@ -473,7 +493,7 @@ namespace $projectName.Api.Dtos.Account
     Set-Content "$projectName/src/$projectName.Api/Dtos/Account/LoginDto.cs" -Value $content
 }
 
-function Create-NewUserDto {
+function Write-NewUserDto {
     param(
         [string]$projectName
     )
@@ -498,7 +518,7 @@ namespace $projectName.Api.Dtos.Account
     Set-Content "$projectName/src/$projectName.Api/Dtos/Account/NewUserDto.cs" -Value $content
 }
 
-function Create-ITokenService {
+function Write-ITokenService {
     param(
         [string]$projectName
     )
@@ -522,7 +542,7 @@ namespace  $projectName.Api.Interfaces
     Set-Content "$projectName/src/$projectName.Api/Interfaces/ITokenService.cs" -Value $content
 }
 
-function Create-AppSettings {
+function Write-AppSettings {
     param(
         [string]$projectName
     )

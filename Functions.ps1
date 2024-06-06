@@ -1,4 +1,4 @@
-function Prompt-ProjectName {
+function Get-ProjectName {
     param(
         [string]$promptMessage
     )
@@ -12,7 +12,7 @@ function Prompt-ProjectName {
     return $projectName
 }
 
-function Create-ProjectDirectory {
+function Write-ProjectDirectory {
     param(
         [string]$projectName
     )
@@ -20,14 +20,14 @@ function Create-ProjectDirectory {
     Set-Location $projectName
 }
 
-function Create-Solution {
+function Write-Solution {
     param(
         [string]$projectName
     )
     dotnet new sln -n $projectName
 }
 
-function Create-Directories {
+function Write-Directories {
     param(
         [string]$projectName
     )
@@ -48,7 +48,7 @@ function Create-Directories {
     }
 }
 
-function Create-Projects {
+function Write-Projects {
     param(
         [string]$projectName
     )
@@ -98,7 +98,7 @@ function Restore-NuGetPackages {
     dotnet restore "$projectName.sln"
 }
 
-function Init-Git {
+function Add-Git {
     git init
     dotnet new gitignore
 }
@@ -112,6 +112,6 @@ function Add-MigrationAndUpdateDatabase {
     dotnet ef database update
 }
 
-function Run-Project {
+function Start-Project {
     dotnet watch run
 }
