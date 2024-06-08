@@ -1,0 +1,17 @@
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Hosting;
+global using System;
+global using System.Collections.Generic;
+global using System.Threading.Tasks;
+
+global using {{ProjectName}}.Api.Data;
+global using {{ProjectName}}.Api.Interfaces;
+global using {{ProjectName}}.Api.Models;
+//global using {{ProjectName}}.Api.Repositories;
+global using {{ProjectName}}.Api.Services;
+global using {{ProjectName}}.Api.Helpers;
+//global using {{ProjectName}}.Api.Mappers;
+global using {{ProjectName}}.Api.Dtos.Account;

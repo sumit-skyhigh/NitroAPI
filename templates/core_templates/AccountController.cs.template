@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace {{ProjectName}}.Api.Controllers
 {
-    [Route(""api/account"")]
+    [Route("api/account")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -25,7 +25,7 @@ namespace {{ProjectName}}.Api.Controllers
             _signinManager = signInManager;
         }
 
-        [HttpPost(""login"")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
             if (!ModelState.IsValid)
@@ -33,11 +33,11 @@ namespace {{ProjectName}}.Api.Controllers
 
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == loginDto.Username.ToLower());
 
-            if (user == null) return Unauthorized(""Invalid username!"");
+            if (user == null) return Unauthorized("Invalid username!");
 
             var result = await _signinManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
-            if (!result.Succeeded) return Unauthorized(""Username not found and/or password incorrect"");
+            if (!result.Succeeded) return Unauthorized("Username not found and/or password incorrect");
 
             return Ok(
                 new NewUserDto
@@ -49,7 +49,7 @@ namespace {{ProjectName}}.Api.Controllers
             );
         }
 
-        [HttpPost(""register"")]
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             try
@@ -67,7 +67,7 @@ namespace {{ProjectName}}.Api.Controllers
 
                 if (createdUser.Succeeded)
                 {
-                    var roleResult = await _userManager.AddToRoleAsync(appUser, ""User"");
+                    var roleResult = await _userManager.AddToRoleAsync(appUser, "User");
                     if (roleResult.Succeeded)
                     {
                         return Ok(

@@ -27,13 +27,13 @@ namespace {{ProjectName}}.Api.Data
             {
                 new IdentityRole
                 {
-                    Name = ""Admin"",
-                    NormalizedName = ""ADMIN""
+                    Name = "Admin",
+                    NormalizedName = "ADMIN"
                 },
                 new IdentityRole
                 {
-                    Name = ""User"",
-                    NormalizedName = ""USER""
+                    Name = "User",
+                    NormalizedName = "USER"
                 },
             };
             builder.Entity<IdentityRole>().HasData(roles);
