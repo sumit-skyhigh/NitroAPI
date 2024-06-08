@@ -1,3 +1,10 @@
+# Functions.ps1
+# Common utility functions for setting up the .NET Web API project
+
+<#
+.SYNOPSIS
+Prompts the user for the project name.
+#>
 function Get-ProjectName {
     param(
         [string]$promptMessage
@@ -12,21 +19,43 @@ function Get-ProjectName {
     return $projectName
 }
 
+<#
+.SYNOPSIS
+Creates the project directory and navigates into it.
+#>
 function Write-ProjectDirectory {
     param(
         [string]$projectName
     )
-    New-Item -ItemType Directory -Force -Path $projectName
-    Set-Location $projectName
+    try {
+        New-Item -ItemType Directory -Force -Path $projectName
+        #Set-Location $projectName
+    } catch {
+        Write-Host "Error creating project directory: $_"
+        exit
+    }
 }
 
+<#
+.SYNOPSIS
+Creates the solution file for the project.
+#>
 function Write-Solution {
     param(
         [string]$projectName
     )
-    dotnet new sln -n $projectName
+    try {
+        dotnet new sln -n $projectName
+    } catch {
+        Write-Host "Error creating solution: $_"
+        exit
+    }
 }
 
+<#
+.SYNOPSIS
+Creates the necessary directory structure for the project.
+#>
 function Write-Directories {
     param(
         [string]$projectName
@@ -44,24 +73,51 @@ function Write-Directories {
     )
 
     foreach ($dir in $directories) {
-        New-Item -ItemType Directory -Force -Path $dir
+        try {
+            New-Item -ItemType Directory -Force -Path $dir
+        } catch {
+            Write-Host "Error creating directory $_"
+            exit
+        }
     }
 }
 
+<#
+.SYNOPSIS
+Creates the main Web API project.
+#>
 function Write-Projects {
     param(
         [string]$projectName
     )
-    dotnet new webapi -n "$projectName.Api" -o "$projectName/src/$projectName.Api"
+    try {
+        dotnet new webapi -n "$projectName.Api" -o "$projectName/src/$projectName.Api"
+    } catch {
+        Write-Host "Error creating project: $_"
+        exit
+    }
 }
 
+<#
+.SYNOPSIS
+Adds the created project to the solution.
+#>
 function Add-ProjectsToSolution {
     param(
         [string]$projectName
     )
-    dotnet sln add "$projectName/src/$projectName.Api/$projectName.Api.csproj"
+    try {
+        dotnet sln add "$projectName/src/$projectName.Api/$projectName.Api.csproj"
+    } catch {
+        Write-Host "Error adding project to solution: $_"
+        exit
+    }
 }
 
+<#
+.SYNOPSIS
+Installs the necessary NuGet packages for the project.
+#>
 function Install-NuGetPackages {
     param(
         [string]$projectName
@@ -91,27 +147,63 @@ function Install-NuGetPackages {
     }
 }
 
+<#
+.SYNOPSIS
+Restores NuGet packages for the project.
+#>
 function Restore-NuGetPackages {
     param(
         [string]$projectName
     )
-    dotnet restore "$projectName.sln"
+    try {
+        dotnet restore "$projectName.sln"
+    } catch {
+        Write-Host "Error restoring NuGet packages: $_"
+        exit
+    }
 }
 
+<#
+.SYNOPSIS
+Initializes a Git repository and creates a .gitignore file.
+#>
 function Add-Git {
-    git init
-    dotnet new gitignore
+    try {
+        git init
+        dotnet new gitignore
+    } catch {
+        Write-Host "Error initializing git: $_"
+        exit
+    }
 }
 
+<#
+.SYNOPSIS
+Adds an initial migration and updates the database.
+#>
 function Add-MigrationAndUpdateDatabase {
     param(
         [string]$projectName
     )
-    Set-Location "$projectName/src/$projectName.Api"
-    dotnet ef migrations add InitialCreateWithIdentity
-    dotnet ef database update
+    try {
+        #Set-Location "$projectName/src/$projectName.Api"
+        dotnet ef migrations add InitialCreateWithIdentity
+        dotnet ef database update
+    } catch {
+        Write-Host "Error adding migration and updating database: $_"
+        exit
+    }
 }
 
+<#
+.SYNOPSIS
+Runs the project using dotnet watch run.
+#>
 function Start-Project {
-    dotnet watch run
+    try {
+        dotnet watch run
+    } catch {
+        Write-Host "Error running project: $_"
+        exit
+    }
 }

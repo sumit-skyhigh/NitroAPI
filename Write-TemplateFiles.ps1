@@ -1,43 +1,30 @@
-Write-BasicFiles {
-    param(
-        [string]$projectName
-    )
-    # Call individual file creation functions
-    Write-AccountController -projectName $projectName
-    Write-Extensions -projectName $projectName
-    Write-GlobalUsing -projectName $projectName
-    Write-Program -projectName $projectName
-    Write-TokenService -projectName $projectName
-    Write-ApplicationDBContext -projectName $projectName
-    Write-AppUser -projectName $projectName
-    Write-RegisterDto -projectName $projectName
-    Write-LoginDto -projectName $projectName
-    Write-NewUserDto -projectName $projectName
-    Write-ITokenService -projectName $projectName
-    Write-AppSettings -projectName $projectName
+# Write-TemplateFiles.ps1
+# Script to generate template files for .NET project
+
+$templateDir = ".\templates\core_templates"
+
+# Ensure template directory exists
+if (-Not (Test-Path -Path $templateDir)) {
+    New-Item -ItemType Directory -Path $templateDir -Force
 }
 
-
-Write-AccountController {
-    param(
-        [string]$projectName
-    )
-
-    $content = @"
+# Template content for each file
+$templates = @{
+    "AccountController.cs.template" = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using $projectName.Api.Dtos.Account;
-using $projectName.Api.Interfaces;
-using $projectName.Api.Models;
+using {{ProjectName}}.Api.Dtos.Account;
+using {{ProjectName}}.Api.Interfaces;
+using {{ProjectName}}.Api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace $projectName.Api.Controllers
+namespace {{ProjectName}}.Api.Controllers
 {
-    [Route("api/account")]
+    [Route(""api/account"")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -51,7 +38,7 @@ namespace $projectName.Api.Controllers
             _signinManager = signInManager;
         }
 
-        [HttpPost("login")]
+        [HttpPost(""login"")]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
             if (!ModelState.IsValid)
@@ -59,11 +46,11 @@ namespace $projectName.Api.Controllers
 
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == loginDto.Username.ToLower());
 
-            if (user == null) return Unauthorized("Invalid username!");
+            if (user == null) return Unauthorized(""Invalid username!"");
 
             var result = await _signinManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
-            if (!result.Succeeded) return Unauthorized("Username not found and/or password incorrect");
+            if (!result.Succeeded) return Unauthorized(""Username not found and/or password incorrect"");
 
             return Ok(
                 new NewUserDto
@@ -75,7 +62,7 @@ namespace $projectName.Api.Controllers
             );
         }
 
-        [HttpPost("register")]
+        [HttpPost(""register"")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             try
@@ -93,7 +80,7 @@ namespace $projectName.Api.Controllers
 
                 if (createdUser.Succeeded)
                 {
-                    var roleResult = await _userManager.AddToRoleAsync(appUser, "User");
+                    var roleResult = await _userManager.AddToRoleAsync(appUser, ""User"");
                     if (roleResult.Succeeded)
                     {
                         return Ok(
@@ -123,25 +110,16 @@ namespace $projectName.Api.Controllers
     }
 }
 "@
-
-    Set-Content "$projectName/src/$projectName.Api/Controllers/AccountController.cs" -Value $content
-}
-
-function Write-Extensions {
-    param(
-        [string]$projectName
-    )
-
-    $content = @"
+    "Extensions.cs.template" = @"
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using $projectName.Api.Models;
+using {{ProjectName}}.Api.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace $projectName.Api.Helpers
+namespace {{ProjectName}}.Api.Helpers
 {
     public class QueryObject
     {   
@@ -150,17 +128,8 @@ namespace $projectName.Api.Helpers
         public int PageSize { get; set; } = 20;
     }
 }
-"@
-
-    Set-Content "$projectName/src/$projectName.Api/Helpers/Extensions.cs" -Value $content
-}
-
-function Write-GlobalUsing {
-    param(
-        [string]$projectName
-    )
-
-    $content = @"
+"
+    "GlobalUsing.cs.template" = @"
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.Configuration;
@@ -170,25 +139,16 @@ global using System;
 global using System.Collections.Generic;
 global using System.Threading.Tasks;
 
-global using $projectName.Api.Data;
-global using $projectName.Api.Interfaces;
-global using $projectName.Api.Models;
-//global using $projectName.Api.Repositories;
-global using $projectName.Api.Services;
-global using $projectName.Api.Helpers;
-//global using $projectName.Api.Mappers;
-global using $projectName.Api.Dtos.Account;
-"@
-
-    Set-Content "$projectName/src/$projectName.Api/GlobalUsing.cs" -Value $content
-}
-
-function Write-Program {
-    param(
-        [string]$projectName
-    )
-
-    $content = @"
+global using {{ProjectName}}.Api.Data;
+global using {{ProjectName}}.Api.Interfaces;
+global using {{ProjectName}}.Api.Models;
+//global using {{ProjectName}}.Api.Repositories;
+global using {{ProjectName}}.Api.Services;
+global using {{ProjectName}}.Api.Helpers;
+//global using {{ProjectName}}.Api.Mappers;
+global using {{ProjectName}}.Api.Dtos.Account;
+"
+    "Program.cs.template" = @"
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -205,15 +165,15 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSwaggerGen(option =>
 {
-    option.SwaggerDoc("v1", new OpenApiInfo { Title = "$projectName", Version = "v1" });
-    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    option.SwaggerDoc(""v1"", new OpenApiInfo { Title = ""{{ProjectName}}"", Version = ""v1"" });
+    option.AddSecurityDefinition(""Bearer"", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
-        Description = "Please enter a valid token",
-        Name = "Authorization",
+        Description = ""Please enter a valid token"",
+        Name = ""Authorization"",
         Type = SecuritySchemeType.Http,
-        BearerFormat = "JWT",
-        Scheme = "Bearer"
+        BearerFormat = ""JWT"",
+        Scheme = ""Bearer""
     });
     option.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
@@ -223,7 +183,7 @@ builder.Services.AddSwaggerGen(option =>
                 Reference = new OpenApiReference
                 {
                     Type=ReferenceType.SecurityScheme,
-                    Id="Bearer"
+                    Id=""Bearer""
                 }
             },
             new string[]{}
@@ -238,7 +198,7 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlite(builder.Configuration.GetConnectionString(""DefaultConnection""));
 });
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
@@ -264,12 +224,12 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidIssuer = builder.Configuration[""JWT:Issuer""],
         ValidateAudience = true,
-        ValidAudience = builder.Configuration["JWT:Audience"],
+        ValidAudience = builder.Configuration[""JWT:Audience""],
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
-            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"])
+            System.Text.Encoding.UTF8.GetBytes(builder.Configuration[""JWT:SigningKey""])
         )
     };
 });
@@ -294,16 +254,7 @@ app.MapControllers();
 
 app.Run();
 "@
-
-    Set-Content "$projectName/src/$projectName.Api/Program.cs" -Value $content
-}
-
-function Write-TokenService {
-    param(
-        [string]$projectName
-    )
-
-    $content = @"
+    "TokenService.cs.template" = @"
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -311,11 +262,11 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using $projectName.Api.Interfaces;
-using $projectName.Api.Models;
+using {{ProjectName}}.Api.Interfaces;
+using {{ProjectName}}.Api.Models;
 using Microsoft.IdentityModel.Tokens;
 
-namespace $projectName.Api.Services
+namespace {{ProjectName}}.Api.Services
 {
     public class TokenService : ITokenService
     {
@@ -325,7 +276,7 @@ namespace $projectName.Api.Services
         public TokenService(IConfiguration config)
         {
             _config = config;
-            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:SigningKey"]));
+            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config[""JWT:SigningKey""]));
         }
         public string CreateToken(AppUser user)
         {
@@ -342,8 +293,8 @@ namespace $projectName.Api.Services
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.Now.AddDays(7),
                 SigningCredentials = creds,
-                Issuer = _config["JWT:Issuer"],
-                Audience = _config["JWT:Audience"]
+                Issuer = _config[""JWT:Issuer""],
+                Audience = _config[""JWT:Audience""]
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -355,26 +306,17 @@ namespace $projectName.Api.Services
     }
 }
 "@
-
-    Set-Content "$projectName/src/$projectName.Api/Services/TokenService.cs" -Value $content
-}
-
-function Write-ApplicationDBContext {
-    param(
-        [string]$projectName
-    )
-
-    $content = @"
+    "ApplicationDBContext.cs.template" = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using $projectName.Api.Models;
+using {{ProjectName}}.Api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace $projectName.Api.Data
+namespace {{ProjectName}}.Api.Data
 {
     public class ApplicationDBContext : IdentityDbContext<AppUser>
     {
@@ -394,13 +336,13 @@ namespace $projectName.Api.Data
             {
                 new IdentityRole
                 {
-                    Name = "Admin",
-                    NormalizedName = "ADMIN"
+                    Name = ""Admin"",
+                    NormalizedName = ""ADMIN""
                 },
                 new IdentityRole
                 {
-                    Name = "User",
-                    NormalizedName = "USER"
+                    Name = ""User"",
+                    NormalizedName = ""USER""
                 },
             };
             builder.Entity<IdentityRole>().HasData(roles);
@@ -408,23 +350,14 @@ namespace $projectName.Api.Data
     }
 }
 "@
-
-    Set-Content "$projectName/src/$projectName.Api/Data/ApplicationDBContext.cs" -Value $content
-}
-
-function Write-AppUser {
-    param(
-        [string]$projectName
-    )
-
-    $content = @"
+    "AppUser.cs.template" = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 
-namespace $projectName.Api.Models
+namespace {{ProjectName}}.Api.Models
 {
     public class AppUser : IdentityUser
     {
@@ -432,23 +365,14 @@ namespace $projectName.Api.Models
     }
 }
 "@
-
-    Set-Content "$projectName/src/$projectName.Api/Models/AppUser.cs" -Value $content
-}
-
-function Write-RegisterDto {
-    param(
-        [string]$projectName
-    )
-
-    $content = @"
+    "RegisterDto.cs.template" = @"
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace $projectName.Api.Dtos.Account
+namespace {{ProjectName}}.Api.Dtos.Account
 {
     public class RegisterDto
     {
@@ -462,23 +386,14 @@ namespace $projectName.Api.Dtos.Account
     }
 }
 "@
-
-    Set-Content "$projectName/src/$projectName.Api/Dtos/Account/RegisterDto.cs" -Value $content
-}
-
-function Write-LoginDto {
-    param(
-        [string]$projectName
-    )
-
-    $content = @"
+    "LoginDto.cs.template" = @"
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace $projectName.Api.Dtos.Account
+namespace {{ProjectName}}.Api.Dtos.Account
 {
     public class LoginDto
     {
@@ -489,22 +404,13 @@ namespace $projectName.Api.Dtos.Account
     }
 }
 "@
-
-    Set-Content "$projectName/src/$projectName.Api/Dtos/Account/LoginDto.cs" -Value $content
-}
-
-function Write-NewUserDto {
-    param(
-        [string]$projectName
-    )
-
-    $content = @"
+    "NewUserDto.cs.template" = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace $projectName.Api.Dtos.Account
+namespace {{ProjectName}}.Api.Dtos.Account
 {
     public class NewUserDto
     {
@@ -514,58 +420,44 @@ namespace $projectName.Api.Dtos.Account
     }
 }
 "@
-
-    Set-Content "$projectName/src/$projectName.Api/Dtos/Account/NewUserDto.cs" -Value $content
-}
-
-function Write-ITokenService {
-    param(
-        [string]$projectName
-    )
-
-    $content = @"
+    "ITokenService.cs.template" = @"
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using $projectName.Api.Models;
+using {{ProjectName}}.Api.Models;
 
-namespace  $projectName.Api.Interfaces
+namespace {{ProjectName}}.Api.Interfaces
 {
     public interface ITokenService
     {
         string CreateToken(AppUser user);
     }
 }
+"
+    "appsettings.json.template" = @"
+{
+    ""ConnectionStrings"": {
+        ""DefaultConnection"": ""Data Source=app.db;""
+    },
+    ""Logging"": {
+        ""LogLevel"": {
+            ""Default"": ""Information"",
+            ""Microsoft.AspNetCore"": ""Warning""
+        }
+    },
+    ""AllowedHosts"": ""*"",
+    ""JWT"": {
+        ""Issuer"": ""http://localhost:5246"",
+        ""Audience"": ""http://localhost:5246"",
+        ""SigningKey"": ""sdgfijh3466iu345g87g08c24g7gr803g30587ghh35807fg39074fvg80493745gf082b507807g807fgf""
+    }
+}
 "@
-
-    Set-Content "$projectName/src/$projectName.Api/Interfaces/ITokenService.cs" -Value $content
 }
 
-function Write-AppSettings {
-    param(
-        [string]$projectName
-    )
-
-    $content = @"
-{
-    "ConnectionStrings": {
-      "DefaultConnection": "Data Source=app.db;"
-    },
-    "Logging": {
-      "LogLevel": {
-        "Default": "Information",
-        "Microsoft.AspNetCore": "Warning"
-      }
-    },
-    "AllowedHosts": "*",
-    "JWT": {
-      "Issuer": "http://localhost:5246",
-      "Audience": "http://localhost:5246",
-      "SigningKey": "sdgfijh3466iu345g87g08c24g7gr803g30587ghh35807fg39074fvg80493745gf082b507807g807fgf"
-    }
-  }
-"@
-
-    Set-Content "$projectName/src/$projectName.Api/appsettings.json" -Value $content
+# Write templates to files
+foreach ($template in $templates.GetEnumerator()) {
+    $filePath = Join-Path -Path $templateDir -ChildPath $template.Key
+    Set-Content -Path $filePath -Value $template.Value
 }

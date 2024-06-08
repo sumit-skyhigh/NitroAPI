@@ -1,7 +1,9 @@
-. .\Functions.ps1
-. .\WriteCoreFiles.ps1
+. .\CoreFunctions.ps1
+. .\Write-CoreFiles.ps1
 
-$projectName = Prompt-ProjectName -promptMessage "Enter the Web API project name"
+$projectName = Get-ProjectName -promptMessage "Enter the Web API project name"
+$templateDir = ".\templates\core_templates"
+
 
 # Create project directory, solution, directories, add projects to solution.
 Write-ProjectDirectory -projectName $projectName
@@ -13,11 +15,15 @@ Add-ProjectsToSolution -projectName $projectName
 # Install NuGet packages, and restore NuGet packages
 Install-NuGetPackages -projectName $projectName
 Restore-NuGetPackages -projectName $projectName
+ 
+# Write core files using templates
+Write-CoreFiles -projectName $projectName -templateDir $templateDir
 
-# Create core files
-Write-CoreFiles -projectName $projectName
+##Show success message
+Write-Host "Project setup complete. Now migrate the database and run the project."
 
 # Init Git and add migration
-Add-Git
-Add-MigrationAndUpdateDatabase -projectName $projectName
-Start-Project
+# Add-Git
+# Add-MigrationAndUpdateDatabase -projectName $projectName
+# -projectName $projectName
+# Start-Project
