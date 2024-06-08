@@ -20,17 +20,17 @@ function Write-CoreFiles {
 
 
     Write-AccountController -projectName $projectName -templateDir $templateDir
-    # Write-Extensions -projectName $projectName -templateDir $templateDir
-    # Write-GlobalUsing -projectName $projectName -templateDir $templateDir
+    Write-Extensions -projectName $projectName -templateDir $templateDir
+    Write-GlobalUsing -projectName $projectName -templateDir $templateDir
     Write-Program -projectName $projectName -templateDir $templateDir
-    # Write-TokenService -projectName $projectName -templateDir $templateDir
-    # Write-ApplicationDBContext -projectName $projectName -templateDir $templateDir
-    # Write-AppUser -projectName $projectName -templateDir $templateDir
-    # Write-RegisterDto -projectName $projectName -templateDir $templateDir
-    # Write-LoginDto -projectName $projectName -templateDir $templateDir
-    # Write-NewUserDto -projectName $projectName -templateDir $templateDir
-    # Write-ITokenService -projectName $projectName -templateDir $templateDir
-    # Write-AppSettings -projectName $projectName -templateDir $templateDir
+    Write-TokenService -projectName $projectName -templateDir $templateDir
+    Write-ApplicationDBContext -projectName $projectName -templateDir $templateDir
+    Write-AppUser -projectName $projectName -templateDir $templateDir
+    Write-RegisterDto -projectName $projectName -templateDir $templateDir
+    Write-LoginDto -projectName $projectName -templateDir $templateDir
+    Write-NewUserDto -projectName $projectName -templateDir $templateDir
+    Write-ITokenService -projectName $projectName -templateDir $templateDir
+    Write-AppSettings -projectName $projectName -templateDir $templateDir
 }
 
 function Write-AccountController {
@@ -53,7 +53,7 @@ function Write-Extensions {
         [string]$templateDir
     )
 
-    $templatePath =  -PathJoin-Path $templateDiJoin-Path -Path $templateDir -ChildPath "Extensions.cs.template"
+    $templatePath =  Join-Path $templateDiJoin-Path -Path $templateDir -ChildPath "Extensions.cs.template"
     $content = Get-TemplateContent -templatePath $templatePath
     $content = $content -replace "{{ProjectName}}", $projectName
     Set-Content -Path "$projectName/src/$projectName.Api/Helpers/Extensions.cs" -Value $content
