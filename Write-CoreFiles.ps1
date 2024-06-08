@@ -53,7 +53,7 @@ function Write-Extensions {
         [string]$templateDir
     )
 
-    $templatePath =  Join-Path $templateDiJoin-Path -Path $templateDir -ChildPath "Extensions.cs.template"
+    $templatePath =  Join-Path -Path $templateDir -ChildPath "Extensions.cs.template"
     $content = Get-TemplateContent -templatePath $templatePath
     $content = $content -replace "{{ProjectName}}", $projectName
     Set-Content -Path "$projectName/src/$projectName.Api/Helpers/Extensions.cs" -Value $content

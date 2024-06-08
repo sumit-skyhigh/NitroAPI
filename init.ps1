@@ -5,25 +5,28 @@ $projectName = Get-ProjectName -promptMessage "Enter the Web API project name"
 $templateDir = ".\templates\core_templates"
 
 
-# Create project directory, solution, directories, add projects to solution.
+# Write project directories, solution, and projects
 Write-ProjectDirectory -projectName $projectName
 Write-Solution -projectName $projectName
-Write-Directories -projectName $projectName
 Write-Projects -projectName $projectName
+
+# Add projects to the solution
 Add-ProjectsToSolution -projectName $projectName
+# Write directories
+Write-Directories -projectName $projectName
+# Write core files using templates
+Write-CoreFiles -projectName $projectName -templateDir $templateDir
 
 # Install NuGet packages, and restore NuGet packages
 Install-NuGetPackages -projectName $projectName
 Restore-NuGetPackages -projectName $projectName
- 
-# Write core files using templates
-Write-CoreFiles -projectName $projectName -templateDir $templateDir
 
-##Show success message
+# Show success message
 Write-Host "Project setup complete. Now migrate the database and run the project."
 
 # Init Git and add migration
-# Add-Git
-# Add-MigrationAndUpdateDatabase -projectName $projectName
-# -projectName $projectName
-# Start-Project
+Add-Git
+Add-MigrationAndUpdateDatabase -projectName $projectName
+
+# Start the project
+Start-Project

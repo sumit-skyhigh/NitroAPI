@@ -45,7 +45,9 @@ function Write-Solution {
         [string]$projectName
     )
     try {
+        Set-Location $projectName
         dotnet new sln -n $projectName
+        Set-Location ..
     } catch {
         Write-Host "Error creating solution: $_"
         exit
@@ -106,8 +108,8 @@ function Add-ProjectsToSolution {
     param(
         [string]$projectName
     )
-    try {
-        dotnet sln add "$projectName/src/$projectName.Api/$projectName.Api.csproj"
+    try {      
+        dotnet sln ./$projectName/$projectName.sln add "$projectName/src/$projectName.Api/$projectName.Api.csproj"              
     } catch {
         Write-Host "Error adding project to solution: $_"
         exit
@@ -169,8 +171,10 @@ Initializes a Git repository and creates a .gitignore file.
 #>
 function Add-Git {
     try {
+        Set-Location $projectName
         git init
         dotnet new gitignore
+        Set-Location ..
     } catch {
         Write-Host "Error initializing git: $_"
         exit
@@ -186,7 +190,7 @@ function Add-MigrationAndUpdateDatabase {
         [string]$projectName
     )
     try {
-        #Set-Location "$projectName/src/$projectName.Api"
+        Set-Location "$projectName/src/$projectName.Api"
         dotnet ef migrations add InitialCreateWithIdentity
         dotnet ef database update
     } catch {
