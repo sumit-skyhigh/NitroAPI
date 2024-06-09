@@ -23,6 +23,10 @@
 . .\CoreFunctions.ps1
 . .\Write-CoreFiles.ps1
 
+# Check if donet sdk 8 is installed
+Test-DotnetSdk
+
+
 $projectName = Get-ProjectName -promptMessage "Enter the Web API project name"
 $templateDir = ".\templates\core_templates"
 

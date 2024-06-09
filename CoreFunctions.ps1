@@ -3,6 +3,21 @@
 
 <#
 .SYNOPSIS
+Checks if the .NET SDK 8 is installed.
+#>
+function Test-DotnetSdk {
+    $dotnetVersion = dotnet --version
+    if ($dotnetVersion -notmatch "8") {
+        Write-Host "Please install .NET SDK 8 to proceed. You can download it from https://dotnet.microsoft.com/download/dotnet/8.0"
+        exit
+    }
+    else {
+        Write-Host "Found required .NET SDK version. Proceeding with project setup."
+    }
+}
+
+<#
+.SYNOPSIS
 Prompts the user for the project name.
 #>
 function Get-ProjectName {
