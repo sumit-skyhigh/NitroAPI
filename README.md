@@ -35,11 +35,11 @@ Generation of a NitroAPI project is simple and straightforward. Follow these ste
 
 #powershell script
 
-    ```powershell
-    git clone https://github.com/sumit-skyhigh/NitroAPI
-    cd NitroAPI    
-    .\init.ps1
-    ```
+```powershell
+git clone https://github.com/sumit-skyhigh/NitroAPI
+cd NitroAPI    
+.\init.ps1
+```
     
 
 The script will prompt you for a project name. Enter a valid name (alphanumeric characters and underscores only) and press Enter. The script will then set up the project structure, install dependencies, and configure the project for you. Also it will itilitize git repository and migrate the database for testing using SQLite. 
